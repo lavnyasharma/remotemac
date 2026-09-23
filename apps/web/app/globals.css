@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #ffffff;
+  --bg-2: #f5f5f7;
+  --bg-3: #ececef;
+  --text: #1d1d1f;
+  --text-2: #6e6e73;
+  --text-3: #75757a;
+  --border: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.14);
+  --surface: #ffffff;
+  --surface-elevated: #ffffff;
+  --shadow-color: rgba(0, 0, 0, 0.08);
+  --scrim: rgba(255, 255, 255, 0.72);
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --bg: #000000;
+  --bg-2: #0a0a0c;
+  --bg-3: #121214;
+  --text: #f5f5f7;
+  --text-2: #9a9dae;
+  --text-3: #767992;
+  --border: rgba(255, 255, 255, 0.09);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --surface: #121214;
+  --surface-elevated: #19191c;
+  --shadow-color: rgba(0, 0, 0, 0.55);
+  --scrim: rgba(0, 0, 0, 0.72);
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #000000;
+    --bg-2: #0a0a0c;
+    --bg-3: #121214;
+    --text: #f5f5f7;
+    --text-2: #9a9dae;
+    --text-3: #767992;
+    --border: rgba(255, 255, 255, 0.09);
+    --border-strong: rgba(255, 255, 255, 0.16);
+    --surface: #121214;
+    --surface-elevated: #19191c;
+    --shadow-color: rgba(0, 0, 0, 0.55);
+    --scrim: rgba(0, 0, 0, 0.72);
+    color-scheme: dark;
+  }
+}
+
+* {
+  border-color: var(--border);
+}
+
+/* Global smooth-scroll makes ordinary wheel/trackpad scrolling feel laggy on long pages —
+   anchor links use a targeted scroll instead (see Nav.tsx), so this stays off by default. */
+html {
+  scroll-behavior: auto;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Starfield is tuned for the dark hero (matches the product art's night-sky palette); it reads
+   as noise on the light surface, so it fades out there instead of being duplicated per-theme. */
+[data-theme='light'] .starfield {
+  opacity: 0;
+}
+
+::selection {
+  background: rgba(0, 113, 227, 0.25);
+}
+
+:focus-visible {
+  outline: 2px solid #0071e3;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.skip-link:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
