@@ -62,6 +62,14 @@ html {
   scroll-behavior: auto;
 }
 
+/* Decorative glows/blurs extend past section edges by design; clip them at the page level so
+   they never create sideways scrolling on narrow screens. `clip` (unlike `hidden`) doesn't
+   create a scroll container, so position: sticky keeps working. */
+html,
+body {
+  overflow-x: clip;
+}
+
 body {
   background: var(--bg);
   color: var(--text);

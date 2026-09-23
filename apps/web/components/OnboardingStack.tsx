@@ -43,7 +43,7 @@ const STICKY_SCROLL_CONTENT = STEPS.map((step) => ({
 
 export function OnboardingStack() {
   return (
-    <section className="relative border-t border-[var(--border)] py-16 sm:py-24">
+    <section className="relative overflow-x-clip border-t border-[var(--border)] py-16 sm:py-24">
       <AmbientGlow className="left-[10%] top-[10%] h-[380px] w-[380px]" drift={70} />
       <div className="mx-auto max-w-content px-5 sm:px-8">
         <Reveal>
