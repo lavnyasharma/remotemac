@@ -1,0 +1,133 @@
+# ──────────────────────────────────────
+# OS
+# ──────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+Desktop.ini
+
+# ──────────────────────────────────────
+# Node.js / npm
+# ──────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn/cache
+.yarn/unplugged
+.pnp.*
+
+# ──────────────────────────────────────
+# TypeScript build output
+# ──────────────────────────────────────
+dist/
+*.tsbuildinfo
+
+# ──────────────────────────────────────
+# Next.js
+# ──────────────────────────────────────
+.next/
+
+# ──────────────────────────────────────
+# Environment / secrets
+# ──────────────────────────────────────
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# ──────────────────────────────────────
+# IDE / editors
+# ──────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.claude/
+
+# ──────────────────────────────────────
+# React Native
+# ──────────────────────────────────────
+apps/ios/node_modules/
+apps/ios/vendor/
+
+# Metro bundler
+*.jsbundle
+*.jsbundle.map
+
+# ──────────────────────────────────────
+# iOS / Xcode
+# ──────────────────────────────────────
+# Build products
+build/
+DerivedData/
+*.build/
+*.xcarchive
+
+# Xcode user-specific data
+xcuserdata/
+*.xcuserstate
+*.xcuserdatad/
+*.xccheckout
+*.xcscmblueprint
+*.xcode.env.local
+
+# CocoaPods (install from Podfile.lock)
+Pods/
+
+# Xcode compilation cache / index
+.build/
+
+# Build logs
+*.build.log
+.build*.log
+
+# ──────────────────────────────────────
+# macOS app (XcodeGen — .xcodeproj is generated)
+# ──────────────────────────────────────
+apps/mac/RemoteMac/RemoteMac.xcodeproj/
+apps/mac/RemoteMac/build/
+
+# ──────────────────────────────────────
+# Android / Gradle
+# ──────────────────────────────────────
+.gradle/
+local.properties
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+
+# Android build output
+apps/ios/android/app/build/
+apps/ios/android/build/
+apps/ios/android/.gradle/
+
+# ──────────────────────────────────────
+# macOS app installer (built artifact)
+# ──────────────────────────────────────
+*.dmg
+
+# ──────────────────────────────────────
+# Docker
+# ──────────────────────────────────────
+docker-compose.override.yml
+
+# ──────────────────────────────────────
+# Testing
+# ──────────────────────────────────────
+coverage/
+.jest/
+
+# ──────────────────────────────────────
+# Misc
+# ──────────────────────────────────────
+*.log
+tmp/
+.cache/
