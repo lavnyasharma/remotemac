@@ -1,0 +1,5 @@
+# Caddy gets and renews a Let's Encrypt certificate for $DOMAIN automatically, then proxies
+# HTTPS and WSS (the /ws signaling socket) to the backend container.
+{$DOMAIN} {
+	reverse_proxy backend:3000
+}

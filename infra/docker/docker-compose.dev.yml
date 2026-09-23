@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: remotemac
+      POSTGRES_PASSWORD: remotemac
+      POSTGRES_DB: remotemac
+    ports:
+      - "5432:5432"
+    volumes:
+      - remotemac-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  remotemac-postgres-data:

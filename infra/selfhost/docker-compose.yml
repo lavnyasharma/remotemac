@@ -1,0 +1,72 @@
+# Self-hosted RemoteMac backend: Postgres + backend + Caddy (automatic HTTPS) + coturn (TURN).
+# See docs/SELF_HOSTING.md. Run from this directory: `docker compose up -d --build`.
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: remotemac
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: remotemac
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ../..
+      dockerfile: services/backend/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      DATABASE_URL: postgres://remotemac:${POSTGRES_PASSWORD}@postgres:5432/remotemac
+      DATABASE_SSL: "false"
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
+      TURN_URL: turn:${DOMAIN}:3478,turn:${DOMAIN}:3478?transport=tcp
+      TURN_USERNAME: ${TURN_USERNAME:?set TURN_USERNAME in .env}
+      TURN_PASSWORD: ${TURN_PASSWORD:?set TURN_PASSWORD in .env}
+      CORS_ORIGINS: ""
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in .env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+
+  coturn:
+    image: coturn/coturn:4.6
+    restart: unless-stopped
+    # Host networking: TURN needs a large UDP relay port range, which is impractical to map.
+    network_mode: host
+    command:
+      - -n
+      - --listening-port=3478
+      - --min-port=49160
+      - --max-port=49200
+      - --lt-cred-mech
+      - --fingerprint
+      - --realm=${DOMAIN}
+      - --user=${TURN_USERNAME}:${TURN_PASSWORD}
+      - --external-ip=${PUBLIC_IP:?set PUBLIC_IP in .env}/${PRIVATE_IP:?set PRIVATE_IP in .env}
+      - --no-cli
+      - --no-tls
+      - --no-dtls
+      - --no-multicast-peers
+      - --denied-peer-ip=10.0.0.0-10.255.255.255
+      - --denied-peer-ip=172.16.0.0-172.31.255.255
+      - --denied-peer-ip=192.168.0.0-192.168.255.255
+      - --log-file=stdout
+
+volumes:
+  postgres-data:
+  caddy-data:

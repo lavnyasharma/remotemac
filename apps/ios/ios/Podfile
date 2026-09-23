@@ -1,0 +1,64 @@
+ENV['RCT_USE_PREBUILT_RNCORE'] ||= '0'
+ENV['RCT_USE_RN_DEP'] ||= '0'
+
+# react-native-firebase resolves Firebase via SPM by default, whose static-library products
+# collide at link time with this project's static Pods target — use the CocoaPods-vendored
+# Firebase pods instead.
+$RNFirebaseDisableSPM = true
+# RemoteMac doesn't do ad attribution, so skip the IDFA-linked analytics variant (avoids an
+# App Tracking Transparency prompt this app has no use for).
+$RNFirebaseAnalyticsWithoutAdIdSupport = true
+
+# Resolve react_native_pods.rb with node to allow for hoisting
+require Pod::Executable.execute_command('node', ['-p',
+  'require.resolve(
+    "react-native/scripts/react_native_pods.rb",
+    {paths: [process.argv[1]]},
+  )', __dir__]).strip
+
+platform :ios, min_ios_version_supported
+prepare_react_native_project!
+
+linkage = ENV['USE_FRAMEWORKS']
+if linkage != nil
+  Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
+  use_frameworks! :linkage => linkage.to_sym
+end
+
+target 'RemoteMac' do
+  config = use_native_modules!
+
+  use_react_native!(
+    :path => config[:reactNativePath],
+    # An absolute path to your application root.
+    :app_path => "#{Pod::Config.instance.installation_root}/.."
+  )
+
+  # FirebaseCoreInternal (a Swift pod) depends on GoogleUtilities, which doesn't define Swift
+  # modules on its own — needed to import it from Swift when building statically. Scoped to
+  # just this pod: a project-wide `use_modular_headers!` forces modulemap generation for every
+  # pod, including React Native's own, which collide (both React-RuntimeCore and
+  # React-jsitooling already declare a module named "react_runtime").
+  pod 'GoogleUtilities', :modular_headers => true
+
+  post_install do |installer|
+    react_native_post_install(
+      installer,
+      config[:reactNativePath],
+      :mac_catalyst_enabled => false,
+      # :ccache_enabled => true
+    )
+
+    # Some transitive pods (e.g. the privacy-manifest resource bundles for GoogleUtilities,
+    # PromisesObjC, nanopb) hard-code an old IPHONEOS_DEPLOYMENT_TARGET that the current SDK's
+    # supported range no longer builds for — clamp everything up to the project's minimum.
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |build_config|
+        current = build_config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_f
+        if current > 0 && current < min_ios_version_supported.to_f
+          build_config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = min_ios_version_supported
+        end
+      end
+    end
+  end
+end

@@ -1,0 +1,60 @@
+# Render Blueprint — deploys the backend (services/backend/Dockerfile) plus a managed Postgres.
+# Usage: render.com → New → Blueprint → point at this repo. Render reads this file and
+# provisions both resources, wiring DATABASE_URL automatically.
+#
+# Free-tier caveats worth knowing before relying on this for "always reachable":
+#   - Free web services spin down after ~15 minutes idle and take ~30-60s to cold-start on the
+#     next request — the first pairing/reconnect after a while away from home will be slow, not
+#     broken.
+#   - Render's free Postgres is time-limited (expires after a set number of days, currently 30)
+#     and has to be recreated/migrated — fine for testing this deploy, not for the long term.
+#   - Upgrading both to the Starter plan (~$7/mo each) removes both limits. Change `plan: free`
+#     to `plan: starter` below when ready; nothing else in this file needs to change.
+
+databases:
+  - name: remotemac-db
+    plan: free
+    region: oregon
+    postgresMajorVersion: "16"
+
+services:
+  - type: web
+    name: remotemac-backend
+    runtime: docker
+    dockerfilePath: ./services/backend/Dockerfile
+    dockerContext: .
+    plan: free
+    region: oregon
+    healthCheckPath: /health
+    # Free tier doesn't support preDeployCommand, so migrations run as part of the
+    # container's start command instead (see services/backend/Dockerfile CMD) — applies
+    # any new migrations under services/backend/migrations before the server starts.
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: remotemac-db
+          property: connectionString
+      # Render's internal DB URL (the default `connectionString` above) doesn't need TLS.
+      # Flip to "true" only if DATABASE_URL is ever pointed at an external/managed Postgres
+      # (e.g. Supabase) instead.
+      - key: DATABASE_SSL
+        value: "false"
+      - key: JWT_SECRET
+        generateValue: true
+      # Comma-separated list of allowed browser origins. The Mac/iPhone apps aren't browsers
+      # and don't send an Origin header the CORS check applies to, so this can stay empty
+      # unless a web client is added later.
+      - key: CORS_ORIGINS
+        value: ""
+      # Left blank — no TURN server configured yet (see docs/DEPLOYMENT.md). WebRTC falls back
+      # to the public STUN server already hard-coded in routes/webrtc.ts, which works for most
+      # networks but not all (notably some cellular carriers). Fill these in later, no code
+      # change needed, if you add a coturn VPS.
+      - key: TURN_URL
+        value: ""
+      - key: TURN_USERNAME
+        value: ""
+      - key: TURN_PASSWORD
+        value: ""

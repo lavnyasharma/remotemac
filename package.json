@@ -1,0 +1,20 @@
+{
+  "name": "remote-mac",
+  "private": true,
+  "version": "0.1.0",
+  "description": "RemoteMac monorepo — control your Mac from your iPhone.",
+  "workspaces": [
+    "packages/*",
+    "services/backend",
+    "apps/web"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

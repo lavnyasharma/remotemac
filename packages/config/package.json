@@ -1,0 +1,9 @@
+{
+  "name": "@remote-mac/config",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Shared TypeScript/build configuration for the RemoteMac monorepo.",
+  "files": [
+    "tsconfig.base.json"
+  ]
+}
