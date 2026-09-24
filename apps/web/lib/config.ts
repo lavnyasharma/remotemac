@@ -2,7 +2,9 @@
  * Site-wide constants. RemoteMac has no production marketing domain yet — this is a clear,
  * overridable placeholder (set NEXT_PUBLIC_SITE_URL when one exists) rather than a guess.
  */
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://remotemac.app';
+// `||` (not `??`): an empty string from an env var left set-but-blank must fall back too,
+// not just an unset one, or downstream `new URL(SITE_URL)` calls crash the build.
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://remotemac.app';
 
 export const SITE_NAME = 'RemoteMac';
 
